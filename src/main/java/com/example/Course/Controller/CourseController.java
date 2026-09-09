@@ -6,6 +6,7 @@ import com.example.Course.DTO.CourseResponse;
 import com.example.Course.DTO.CourseUpdateRequest;
 import com.example.Course.Models.Course;
 import com.example.Course.Service.CourseService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,44 +24,29 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<APIResponse<Course>> saveCourse(@RequestBody CourseCreateRequest req) {
-        try{
-            Course course=courseService.createCourse(req);
-            return ResponseEntity.ok(new APIResponse<>(true, "Course Created Successfully", course));
-        }catch(Exception e){
-            return ResponseEntity.status(400).body(new APIResponse<>(false,e.getMessage(),null));
-        }
+    public ResponseEntity<APIResponse<Course>> saveCourse(@Valid @RequestBody CourseCreateRequest req) {
+        Course course = courseService.createCourse(req);
+        return ResponseEntity.ok(new APIResponse<>(true, "Course Created Successfully", course));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<APIResponse<Course>> updateCourse(@PathVariable int id, @RequestBody CourseUpdateRequest req) {
-        try{
-            Course course=courseService.updateCourse(id, req);
-            return ResponseEntity.ok(new APIResponse<>(true, "Course Updated Successfully", course));
-        }catch(Exception e){
-            return ResponseEntity.status(400).body(new APIResponse<>(false,e.getMessage(),null));
-        }
+    public ResponseEntity<APIResponse<Course>> updateCourse(@PathVariable int id, @Valid @RequestBody CourseUpdateRequest req) {
+        Course course = courseService.updateCourse(id, req);
+        return ResponseEntity.ok(new APIResponse<>(true, "Course Updated Successfully", course));
     }
 
-    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteCourse(@PathVariable int id) {
-        try {
-            courseService.deleteCourse(id);
-            return ResponseEntity.ok(new APIResponse<>(true, "Course Deleted Successfully", null));
-        } catch(Exception e) {
-            return ResponseEntity.status(400).body(new APIResponse<>(false, e.getMessage(), null));
-        }
+        courseService.deleteCourse(id);
+        return ResponseEntity.ok(new APIResponse<>(true, "Course Deleted Successfully", null));
     }
 
     @GetMapping
     public ResponseEntity<APIResponse<List<CourseResponse>>> findAll() {
-        try{
-            List<CourseResponse> courseResponses=courseService.findAll();
-            return ResponseEntity.ok(new APIResponse<>(true, "Success", courseResponses));
-        }catch(Exception e){
-            return ResponseEntity.status(400).body(new APIResponse<>(false,e.getMessage(),null));
-        }
+        List<CourseResponse> courseResponses = courseService.findAll();
+        return ResponseEntity.ok(new APIResponse<>(true, "Success", courseResponses));
     }
+
     @GetMapping("/paged")
     public ResponseEntity<APIResponse<com.example.Course.DTO.PageResponse<com.example.Course.DTO.CourseResponseV2>>> findByStatus(
             @RequestParam(defaultValue = "0") int page,
@@ -69,12 +55,7 @@ public class CourseController {
             @RequestParam(required = false) String direction,
             @RequestParam(required = false) com.example.Course.Models.CourseStatus status,
             @RequestParam(required = false) String title) {
-        try {
-            com.example.Course.DTO.PageResponse<com.example.Course.DTO.CourseResponseV2> courseResponses = courseService.getPagedCoursesV2(page, size, sortBy, direction, status, title);
-            return ResponseEntity.ok(new APIResponse<>(true, "Success", courseResponses));
-        } catch (Exception e) {
-            return ResponseEntity.status(400).body(new APIResponse<>(false, e.getMessage(), null));
-        }
+        com.example.Course.DTO.PageResponse<com.example.Course.DTO.CourseResponseV2> courseResponses = courseService.getPagedCoursesV2(page, size, sortBy, direction, status, title);
+        return ResponseEntity.ok(new APIResponse<>(true, "Success", courseResponses));
     }
-
 }

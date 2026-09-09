@@ -32,48 +32,31 @@ public class EnrollmentController {
 
     @PostMapping("/enrollments")
     public ResponseEntity<?> enrollStudent(@PathVariable int courseId) {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String email = auth.getName();
-            Student student = studentRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ học viên"));
-            StudentEnrollment studentEnrollment = studentEnrollmentService.enrollStudent(student.getId(), courseId);
-            EnrollmentResponse enrollmentResponse = new EnrollmentResponse(student.getId(), courseId, studentEnrollment.getCreatedAt());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Student student = studentRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ học viên"));
+        StudentEnrollment studentEnrollment = studentEnrollmentService.enrollStudent(student.getId(), courseId);
+        EnrollmentResponse enrollmentResponse = new EnrollmentResponse(student.getId(), courseId, studentEnrollment.getCreatedAt());
 
-            return ResponseEntity.ok(new APIResponse<>(true, "Đăng ký thành công", enrollmentResponse));
-        } catch (Exception e) {
-            return ResponseEntity.status(400).body(new APIResponse<>(false, e.getMessage(), null));
-        }
+        return ResponseEntity.ok(new APIResponse<>(true, "Đăng ký thành công", enrollmentResponse));
     }
 
     @DeleteMapping("/enrollments/students/{studentID}")
     public ResponseEntity<APIResponse<Object>> dropout(@PathVariable int courseId, @PathVariable int studentID) {
-        try {
-            studentEnrollmentService.dropout(studentID, courseId);
-            return ResponseEntity.ok(new APIResponse<>(true, "Student successfully dropped out", null));
-        } catch (Exception e) {
-            return ResponseEntity.status(204).body(new APIResponse<>(false, e.getMessage(), null));
-        }
+        studentEnrollmentService.dropout(studentID, courseId);
+        return ResponseEntity.ok(new APIResponse<>(true, "Student successfully dropped out", null));
     }
 
     @GetMapping("/enrollments/students")
     public ResponseEntity<APIResponse<List<StudentEnrollment>>> findByName(@RequestParam(value = "search",required=false) String search) {
-        try{
-            List<StudentEnrollment> studentEnrollments = studentEnrollmentService.findByName(search);
-            return ResponseEntity.ok(new APIResponse<>(true, "Search successful", studentEnrollments));
-        }catch(Exception e){
-            return ResponseEntity.status(204).body(new APIResponse<>(false, e.getMessage(), null));
-        }
-
+        List<StudentEnrollment> studentEnrollments = studentEnrollmentService.findByName(search);
+        return ResponseEntity.ok(new APIResponse<>(true, "Search successful", studentEnrollments));
     }
 
     @GetMapping("/students")
     public ResponseEntity<APIResponse<List<Student>>> getStudentsByCourse(@PathVariable int courseId) {
-        try {
-            List<Student> students = studentEnrollmentService.findStudentsByCourseId(courseId);
-            return ResponseEntity.ok(new APIResponse<>(true, "Success", students));
-        } catch (Exception e) {
-            return ResponseEntity.status(400).body(new APIResponse<>(false, e.getMessage(), null));
-        }
+        List<Student> students = studentEnrollmentService.findStudentsByCourseId(courseId);
+        return ResponseEntity.ok(new APIResponse<>(true, "Success", students));
     }
 }

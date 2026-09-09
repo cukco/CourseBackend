@@ -33,8 +33,14 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     public static class AuthRequest {
+        @jakarta.validation.constraints.NotBlank(message = "Name is required for registration")
         public String name;
+        
+        @jakarta.validation.constraints.NotBlank(message = "Email is mandatory")
+        @jakarta.validation.constraints.Email(message = "Email should be valid")
         public String email;
+        
+        @jakarta.validation.constraints.NotBlank(message = "Password is required")
         public String password;
     }
 
@@ -51,7 +57,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody AuthRequest request) {
+    public ResponseEntity<?> register(@jakarta.validation.Valid @RequestBody AuthRequest request) {
         if (userRepository.findByEmail(request.email).isPresent()) {
             return ResponseEntity.badRequest().body("Email này đã được sử dụng!");
         }
@@ -73,19 +79,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
-        try {
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.email, request.password)
-            );
+    public ResponseEntity<?> login(@jakarta.validation.Valid @RequestBody AuthRequest request) {
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.email, request.password)
+        );
 
-            String token = jwtUtils.generateToken(request.email);
-            String role = auth.getAuthorities().iterator().next().getAuthority();
+        String token = jwtUtils.generateToken(request.email);
+        String role = auth.getAuthorities().iterator().next().getAuthority();
 
-            return ResponseEntity.ok(new AuthResponse(token, "Đăng nhập thành công!", role));
-
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("Sai email hoặc mật khẩu!");
-        }
+        return ResponseEntity.ok(new AuthResponse(token, "Đăng nhập thành công!", role));
     }
 }

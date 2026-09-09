@@ -1,7 +1,14 @@
 package com.example.Course.DTO;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class StudentCreateRequest {
+    @NotBlank(message = "Name is mandatory")
     private String name;
+    
+    @NotBlank(message = "Email is mandatory")
+    @Email(message = "Email should be valid")
     private String email;
 
     public StudentCreateRequest(String name, String email) {

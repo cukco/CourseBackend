@@ -1,20 +1,27 @@
 package com.example.Course.DTO;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import com.example.Course.Models.CourseStatus;
 
 public class CourseCreateRequest {
+    @NotBlank(message = "Title is mandatory")
     private String title;
+    
+    @NotNull(message = "Status is mandatory")
     private CourseStatus status;
-    private int instructorId;
+    
+    @NotNull(message = "Instructor ID is mandatory")
+    private Integer instructorId;
 
     public String getTitle() {return this.title;}
     public void setTitle(String title) {this.title = title;}
     public CourseStatus getStatus() {return this.status;}
     public void setStatus(CourseStatus status) {this.status = status;}
-    public int getInstructorId() {return this.instructorId;}
-    public void setInstructorId(int instructorId) {this.instructorId = instructorId;}
+    public Integer getInstructorId() {return this.instructorId;}
+    public void setInstructorId(Integer instructorId) {this.instructorId = instructorId;}
 
-    public CourseCreateRequest(String title, CourseStatus status, int instructorId) {
+    public CourseCreateRequest(String title, CourseStatus status, Integer instructorId) {
         this.title = title;
         this.status = status;
         this.instructorId = instructorId;
